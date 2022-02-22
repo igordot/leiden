@@ -45,15 +45,30 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          activate-environment: ""
           auto-activate-base: true
           auto-update-conda: true
-      - name: Conda info
+      - name: conda info initial
         shell: bash -l {0}
-        run: conda info
-      - name: Conda list
-        shell: pwsh
-        run: conda list
+        run: |
+          conda info
+          conda env list
+          conda list
 
       - uses: r-lib/actions/check-r-package@v1
         with:
           error-on: '"error"'
+
+      - name: load leiden and check environment
+        run: |
+          library(leiden)
+          reticulate::conda_list()
+          reticulate::py_module_available("numpy")
+          reticulate::py_module_available("leidenalg")
+        shell: Rscript {0}
+
+      - name: conda info final
+        shell: bash -l {0}
+        run: |
+          conda env list
+          conda list
